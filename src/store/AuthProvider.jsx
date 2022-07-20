@@ -3,12 +3,19 @@ import React, { useState } from "react";
 import AuthContext from "./AuthContext";
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(null);
+  const storageToken = JSON.parse(localStorage.getItem("token"));
+  const [token, setToken] = useState(storageToken?.idToken);
 
   const isLoggedIn = !!token;
 
+  console.log(isLoggedIn);
+
   const loginHandler = (newToken) => {
-    setToken(newToken);
+    localStorage.setItem(
+      "token",
+      JSON.stringify({ email: newToken.email, idToken: newToken.idToken })
+    );
+    setToken(newToken.idToken);
   };
 
   const logoutHandler = () => {

@@ -17,13 +17,10 @@ const AuthForm = () => {
   const authCtx = useContext(AuthContext);
 
   useEffect(() => {
-    // const getItem = JSON.parse(localStorage.getItem("token"));
-    // authCtx.setToken(getItem.idToken);
-
     if (confirmPassword.length > 0 && emailPassword.password.length > 0) {
       setValidConfirmPassword(confirmPassword === emailPassword.password);
     }
-  }, [emailPassword.password, confirmPassword, authCtx]);
+  }, [emailPassword.password, confirmPassword]);
 
   const emailFormHandler = (event) => {
     setEmailPassword((prevState) => {
@@ -70,7 +67,13 @@ const AuthForm = () => {
           returnSecureToken: true,
         },
       },
-      (data) => authCtx.login(data.idToken)
+      (data) => authCtx.login({ ...data }),
+      {
+        path: "/",
+        replaceTo: {
+          replace: true,
+        },
+      }
     );
 
     setEmailPassword({
@@ -99,7 +102,7 @@ const AuthForm = () => {
           <input
             type="password"
             id="password"
-            required
+            required={true}
             onChange={passwordFormHandler}
             value={emailPassword.password}
           />
@@ -110,7 +113,7 @@ const AuthForm = () => {
             <input
               type="password"
               id="password-match"
-              required
+              required={true}
               onChange={passwordMatchHandler}
               value={confirmPassword}
             />

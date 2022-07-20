@@ -35,7 +35,13 @@ const ProfileForm = () => {
           returnSecureToken: false,
         },
       },
-      (data) => setPasswordData(data)
+      (data) => setPasswordData(data),
+      {
+        path: "/",
+        replaceTo: {
+          replace: true,
+        },
+      }
     );
     setNewPassword("");
   };
