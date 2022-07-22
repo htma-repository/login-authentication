@@ -73,7 +73,7 @@ const AuthForm = () => {
           new Date().getTime() + +data.expiresIn * 1000
         );
         console.log(`expireDate = ${expireDate.toISOString()}`);
-        return login(data.idToken, expireDate);
+        return login(data.idToken, expireDate.toISOString());
       },
       {
         path: "/",
