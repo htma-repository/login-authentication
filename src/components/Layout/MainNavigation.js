@@ -6,12 +6,12 @@ import AuthContext from "../../store/AuthContext";
 import classes from "./MainNavigation.module.css";
 
 const MainNavigation = () => {
-  const authCtx = useContext(AuthContext);
+  const { logout, isLoggedIn } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
   const logoutHandler = () => {
-    authCtx.logout();
+    logout();
     navigate("auth", { replace: true });
   };
 
@@ -22,7 +22,7 @@ const MainNavigation = () => {
       </Link>
       <nav>
         <ul>
-          {!authCtx.isLoggedIn ? (
+          {!isLoggedIn ? (
             <li>
               <Link to="/auth">Login</Link>
             </li>

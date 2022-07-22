@@ -34,6 +34,7 @@ const useAxios = () => {
         }
 
         const data = await response.data;
+        console.log(data);
         requestConfig(data);
         navigate(navigateRouter.path, navigateRouter.replaceTo);
       } catch (error) {

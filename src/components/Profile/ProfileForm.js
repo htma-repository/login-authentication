@@ -8,7 +8,7 @@ import classes from "./ProfileForm.module.css";
 const ProfileForm = () => {
   const [newPassword, setNewPassword] = useState("");
   const [passwordData, setPasswordData] = useState({});
-  const authCtx = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
 
   const { requestHttp, error, loading } = useAxios();
 
@@ -30,7 +30,7 @@ const ProfileForm = () => {
         method: "POST",
         url: "https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAPBQ3hlr9iKf5Bhw2hL426Z1Lqusolk6I",
         data: {
-          idToken: authCtx.token,
+          idToken: token,
           password: newPassword,
           returnSecureToken: false,
         },

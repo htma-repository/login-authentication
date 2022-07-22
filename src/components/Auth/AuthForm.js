@@ -14,7 +14,7 @@ const AuthForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [validConfirmPassword, setValidConfirmPassword] = useState(false);
   const { requestHttp, loading, error } = useAxios();
-  const authCtx = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
   useEffect(() => {
     if (confirmPassword.length > 0 && emailPassword.password.length > 0) {
@@ -67,7 +67,14 @@ const AuthForm = () => {
           returnSecureToken: true,
         },
       },
-      (data) => authCtx.login({ ...data }),
+      (data) => {
+        // get expireDate
+        const expireDate = new Date(
+          new Date().getTime() + +data.expiresIn * 1000
+        );
+        console.log(`expireDate = ${expireDate.toISOString()}`);
+        return login(data.idToken, expireDate);
+      },
       {
         path: "/",
         replaceTo: {

@@ -15,11 +15,14 @@ function App() {
     <Layout>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        {isLoggedIn ? (
-          <Route path="profile" element={<UserProfile />} />
-        ) : (
-          <Route path="auth" element={<AuthPage />} />
-        )}
+        <Route
+          path="profile"
+          element={isLoggedIn ? <UserProfile /> : <AuthPage />}
+        />
+        <Route
+          path="auth"
+          element={!isLoggedIn ? <AuthPage /> : <HomePage />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
