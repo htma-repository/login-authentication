@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 
 import AuthContext from "./AuthContext";
 
@@ -28,37 +28,65 @@ const calculateAutoLogoutTime = (expireDate) => {
   return remainingAutoLogoutTime;
 };
 
+const getStorageItems = () => {
+  const authToken = localStorage.getItem("auth_token");
+  const expireToken = localStorage.getItem("expire_token");
+
+  const remainingTime = calculateAutoLogoutTime(expireToken);
+
+  if (remainingTime <= 60000) {
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("expire_token");
+    return null;
+  }
+  return {
+    authToken,
+    remainingTime,
+  };
+};
+
+let logoutTimer = null;
+
 const AuthProvider = ({ children }) => {
-  const storageToken = JSON.parse(localStorage.getItem("auth_token")) || null;
-  console.log(storageToken?.expire_token);
   // const storageToken = loadFromCookie();
-  const [token, setToken] = useState(storageToken?.id_token);
+  const storageData = getStorageItems();
+  let storageToken;
+  if (storageData) storageToken = storageData.authToken;
+
+  const [token, setToken] = useState(storageToken);
 
   const isLoggedIn = !!token;
 
-  const logoutHandler = () => {
+  const logoutHandler = useCallback(() => {
     localStorage.removeItem("auth_token");
-    // document.cookie = "token=";
+    localStorage.removeItem("expire_token");
     setToken(null);
-  };
+    // document.cookie = "token=";
+
+    if (logoutTimer) {
+      clearTimeout(logoutTimer);
+    }
+  }, []);
 
   const loginHandler = (newToken, expireDate) => {
-    localStorage.setItem(
-      "auth_token",
-      JSON.stringify({
-        id_token: newToken,
-        expire_token: expireDate,
-      })
-    );
-    // document.cookie = `token=${newToken.idToken}`;
+    localStorage.setItem("auth_token", newToken);
+    localStorage.setItem("expire_token", expireDate);
     setToken(newToken);
+    // document.cookie = `token=${newToken.idToken}`;
 
     const autoLogout = calculateAutoLogoutTime(expireDate);
 
     console.log(`autoLogout = ${autoLogout}`);
 
-    setTimeout(logoutHandler, autoLogout);
+    logoutTimer = setTimeout(logoutHandler, autoLogout);
   };
+
+  useEffect(() => {
+    if (storageData) {
+      console.log(storageData.remainingTime);
+      logoutTimer = setTimeout(logoutHandler, storageData.remainingTime);
+    }
+  }, [storageData, logoutHandler]);
 
   const value = {
     token,
